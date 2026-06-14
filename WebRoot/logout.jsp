@@ -1,60 +1,61 @@
 <%@ page contentType="text/html; charset=utf-8"
     import="java.util.Date,java.text.SimpleDateFormat"%>
 <%
-	String guestnam = (String) session.getAttribute("nam0");
-	String talk = null;
-	Object visitnam = null;
-	Object visitsex = null;
-	String visittmp = null;
-	String vnmtmp = null;
-	String sentencestr = (String) application.getAttribute("sentence");
-	int sentence = Integer.parseInt(sentencestr);
+  String guestnam = (String) session.getAttribute("nam0");
+  if (guestnam == null) guestnam = "游客";
 
-	String tmp;
-	int kint=0;
-	for(int i = 1; i <= sentence; i++)
-	{
-		tmp=(String)application.getAttribute( "visitnam"+i ); 
-		if( tmp.equals( guestnam)) kint = i;
-	}
+  String safeGuestnam = guestnam
+      .replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
 
-	for(int i = kint; i <= sentence; i++)
-	{
-		tmp=(String) application.getAttribute("visitnam"+(i+1));
-		application.setAttribute("visitnam"+i,tmp);
-		tmp=(String) application.getAttribute("visitsex"+(i+1));
-		application.setAttribute("visitsex"+i,tmp);
-	}
-	application.setAttribute("visitnam"+sentence,"");
-	application.setAttribute("visitsex"+sentence,"");
+  String sentencestr = (String) application.getAttribute("sentence");
+  int sentence = Integer.parseInt(sentencestr);
 
-	for(int i = sentence; i >= 2; i--)
-	{
-		talk = (String)application.getAttribute("talk" + (i - 1));
-		application.setAttribute("talk" + i, talk);
-	}
+  // 找到当前用户在 visitnam 数组中的位置
+  int kint = 0;
+  for (int i = 1; i <= sentence; i++) {
+    String tmp = (String) application.getAttribute("visitnam" + i);
+    if (tmp != null && tmp.equals(guestnam)) { kint = i; break; }
+  }
 
-    Date dat = new Date();
-	SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
-	String tim=sdf.format(dat);	
-	String tking;
-	tking = "<tr><td bgcolor = cyan align=left>谢谢"
-		+guestnam+"光顾! 离开时间："+tim+"</td></tr>";
-	application.setAttribute("talk1", tking);	
-	String talkerstr = (String) application.getAttribute("talker");	
-	int talker = Integer.parseInt(talkerstr);		
-	application.setAttribute("talker", String.valueOf(talker - 1));
+  // 将其后的条目前移一位，填补空缺
+  if (kint > 0) {
+    for (int i = kint; i < sentence; i++) {
+      application.setAttribute("visitnam" + i, application.getAttribute("visitnam" + (i + 1)));
+      application.setAttribute("visitsex" + i, application.getAttribute("visitsex" + (i + 1)));
+    }
+    application.setAttribute("visitnam" + sentence, "");
+    application.setAttribute("visitsex" + sentence, "");
+  }
+
+  // 将聊天记录向后挪一位，首位写入离开消息
+  String talk;
+  for (int i = sentence; i >= 2; i--) {
+    talk = (String) application.getAttribute("talk" + (i - 1));
+    application.setAttribute("talk" + i, talk);
+  }
+
+  Date dat = new Date();
+  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+  String tim = sdf.format(dat);
+
+  String tking =
+      "<div class=\"msg msg-system msg-bye\">谢谢 <b>" + safeGuestnam + "</b> 光顾！离开时间：" + tim + "</div>";
+  application.setAttribute("talk1", tking);
+
+  String talkerstr = (String) application.getAttribute("talker");
+  int talker = Integer.parseInt(talkerstr);
+  if (talker > 0) application.setAttribute("talker", String.valueOf(talker - 1));
 %>
-<html>
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-	<script Language = "javascript">
-<!--
-	function logoutcls()	
-	{
-		self.close(); 
-	}
--->
-	</script>
+<meta charset="utf-8">
+<style>
+body { background:#000; margin:0; }
+</style>
+<script>
+window.onload = function() { self.close(); };
+</script>
 </head>
-<body onload="logoutcls()"></body>
+<body></body>
 </html>
