@@ -3,9 +3,7 @@
 <%
   String guestnam = (String) session.getAttribute("nam0");
   if (guestnam == null) guestnam = "游客";
-
-  String safeGuestnam = guestnam
-      .replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
+  String safeGuestnam = guestnam.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
 
   String sentencestr = (String) application.getAttribute("sentence");
   int sentence = Integer.parseInt(sentencestr);
@@ -17,7 +15,7 @@
     if (tmp != null && tmp.equals(guestnam)) { kint = i; break; }
   }
 
-  // 将其后的条目前移一位，填补空缺
+  // 将其后条目前移，填补空缺（修复原始越界问题）
   if (kint > 0) {
     for (int i = kint; i < sentence; i++) {
       application.setAttribute("visitnam" + i, application.getAttribute("visitnam" + (i + 1)));
@@ -27,13 +25,10 @@
     application.setAttribute("visitsex" + sentence, "");
   }
 
-  // 将聊天记录向后挪一位，首位写入离开消息
-  String talk;
+  // 聊天记录后移，首位写入离开消息
   for (int i = sentence; i >= 2; i--) {
-    talk = (String) application.getAttribute("talk" + (i - 1));
-    application.setAttribute("talk" + i, talk);
+    application.setAttribute("talk" + i, application.getAttribute("talk" + (i - 1)));
   }
-
   Date dat = new Date();
   SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
   String tim = sdf.format(dat);
@@ -51,11 +46,10 @@
 <head>
 <meta charset="utf-8">
 <style>
-body { background:#000; margin:0; }
+body { background: linear-gradient(-45deg,#f5f5f7,#e2d1f9,#e5f0fb,#d4e4f7); background-size:400% 400%; animation:fg 15s ease infinite; margin:0; }
+@keyframes fg{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 </style>
-<script>
-window.onload = function() { self.close(); };
-</script>
+<script>window.onload = function() { self.close(); };</script>
 </head>
 <body></body>
 </html>

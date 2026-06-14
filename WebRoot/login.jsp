@@ -6,7 +6,6 @@
   if (reqname == null) reqname = "游客";
   if (reqsex  == null) reqsex  = "";
 
-  // HTML 转义，防止 XSS
   String safeGuestname = reqname.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
 
   session.setAttribute("nam0", reqname);
@@ -49,7 +48,6 @@
   SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
   String tim = sdf.format(dat);
 
-  // 系统消息同样使用新格式，用户名已转义
   String tking =
       "<div class=\"msg msg-system\">欢迎 <b>" + safeGuestname + "</b> 光临！光临时间：" + tim + "</div>";
   application.setAttribute("talk1", tking);

@@ -6,166 +6,127 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>聊天室</title>
 <style>
+:root {
+  --apple-blue: #0071e3;
+  --glass-bg: rgba(255,255,255,0.55);
+  --glass-blur: blur(28px) saturate(200%);
+  --glass-border: 1px solid rgba(255,255,255,0.78);
+  --text-main: #1d1d1f;
+  --text-sec:  #6e6e73;
+}
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
 body {
   min-height: 100vh;
-  background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  display: flex; align-items: center; justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+  /* 液态流动渐变背景 */
+  background: linear-gradient(-45deg, #f5f5f7, #e2d1f9, #e5f0fb, #d4e4f7);
+  background-size: 400% 400%;
+  animation: fluidGradient 15s ease infinite, pageIn .55s cubic-bezier(0.16,1,0.3,1) both;
   overflow: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* 液态背景光晕 */
-.blob {
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.22;
-  pointer-events: none;
-  animation: morphBlob var(--dur, 10s) ease-in-out infinite alternate;
+@keyframes fluidGradient {
+  0%   { background-position: 0%   50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0%   50%; }
 }
-.b1 { --dur:13s; width:560px; height:560px; background:#007AFF; top:-180px; left:-180px; }
-.b2 { --dur:9s;  width:420px; height:420px; background:#BF5AF2; bottom:-120px; right:-120px; animation-delay:-4s; }
-.b3 { --dur:16s; width:360px; height:360px; background:#30D158; top:55%; left:48%; animation-delay:-8s; }
-
-@keyframes morphBlob {
-  0%   { border-radius:60% 40% 30% 70%/60% 30% 70% 40%; transform:translate(0,0) scale(1); }
-  40%  { border-radius:30% 60% 70% 40%/50% 60% 30% 60%; transform:translate(24px,-24px) scale(1.06); }
-  100% { border-radius:50% 50% 30% 70%/40% 60% 60% 40%; transform:translate(-12px,18px) scale(0.97); }
+@keyframes pageIn {
+  from { opacity:0; transform:translateY(18px) scale(0.97); }
+  to   { opacity:1; transform:none; }
 }
 
-/* 玻璃卡片 */
+/* 毛玻璃卡片 */
 .card {
-  position: relative;
-  z-index: 10;
+  position: relative; z-index: 10;
   width: 380px;
-  padding: 44px 40px 48px;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(60px) saturate(180%);
-  -webkit-backdrop-filter: blur(60px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 30px;
+  padding: 46px 40px 50px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: 28px;
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.04),
-    0 40px 80px rgba(0,0,0,0.75),
-    inset 0 1px 0 rgba(255,255,255,0.14);
-  animation: cardIn .6s cubic-bezier(0.16,1,0.3,1) both;
-}
-@keyframes cardIn {
-  from { opacity:0; transform:translateY(40px) scale(0.95); }
-  to   { opacity:1; transform:translateY(0)    scale(1);    }
+    0 2px 0  rgba(255,255,255,0.92) inset,
+    0 20px 50px rgba(0,0,0,0.07),
+    0 1px  3px rgba(0,0,0,0.04);
 }
 
-/* 灵动岛标题胶囊 */
+/* 灵动岛胶囊（深色，正宗 Dynamic Island） */
 .island {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: fit-content;
-  margin: 0 auto 36px;
+  display: flex; align-items: center; gap: 8px;
+  width: fit-content; margin: 0 auto 36px;
   padding: 10px 22px;
-  background: #0d0d0d;
-  border: 1px solid rgba(255,255,255,0.13);
+  background: rgba(0,0,0,0.86);
   border-radius: 999px;
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.04),
-    0 6px 24px rgba(0,0,0,0.6),
-    inset 0 1px 0 rgba(255,255,255,0.08);
-  animation: islandGlow 3s ease-in-out infinite;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+  animation: islandFloat 4s ease-in-out infinite;
 }
-@keyframes islandGlow {
-  0%,100% { box-shadow: 0 0 0 1px rgba(255,255,255,.04), 0 6px 24px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08); }
-  50%      { box-shadow: 0 0 0 1px rgba(255,255,255,.06), 0 6px 24px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08), 0 0 28px rgba(0,122,255,.2); }
+@keyframes islandFloat {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
 }
 
-.dot {
-  width: 8px; height: 8px;
-  background: #30D158;
-  border-radius: 50%;
-  box-shadow: 0 0 8px #30D158;
-  animation: blink 2s ease-in-out infinite;
+.island-dot {
+  width:8px; height:8px;
+  background: #30d158; border-radius:50%;
+  box-shadow: 0 0 8px #30d158;
+  animation: dotPulse 2s ease-in-out infinite;
 }
-@keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.45;transform:scale(.8)} }
+@keyframes dotPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.78)} }
 
-.island-label {
-  color: rgba(255,255,255,0.88);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: .5px;
-}
+.island-label { color:rgba(255,255,255,0.92); font-size:13px; font-weight:600; letter-spacing:.5px; }
 
-/* 表单 */
+/* 表单元素 */
 .field-label {
-  display: block;
-  color: rgba(255,255,255,0.38);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-bottom: 8px;
+  display:block; margin-bottom:8px;
+  color:var(--text-sec); font-size:11px; font-weight:700;
+  letter-spacing:1px; text-transform:uppercase;
 }
-
 .field {
-  width: 100%;
-  padding: 14px 18px;
-  background: rgba(255,255,255,0.07);
-  border: 1.5px solid rgba(255,255,255,0.08);
+  width:100%; padding:14px 18px; margin-bottom:16px;
+  background: rgba(255,255,255,0.7);
+  border: 1.5px solid rgba(0,0,0,0.08);
   border-radius: 14px;
-  color: #fff;
-  font-size: 15px;
-  font-family: inherit;
-  outline: none;
-  transition: border-color .22s, background .22s, box-shadow .22s;
-  margin-bottom: 16px;
+  color: var(--text-main); font-size:15px; font-family:inherit;
+  outline:none;
+  transition: border-color .22s, box-shadow .22s, background .22s;
+  -webkit-appearance: none;
 }
-.field::placeholder { color: rgba(255,255,255,0.2); }
+.field::placeholder { color:rgba(0,0,0,0.25); }
 .field:focus {
-  background: rgba(255,255,255,0.1);
-  border-color: rgba(0,122,255,0.75);
-  box-shadow: 0 0 0 3.5px rgba(0,122,255,0.16);
+  background: rgba(255,255,255,0.9);
+  border-color: var(--apple-blue);
+  box-shadow: 0 0 0 3.5px rgba(0,113,227,0.18);
 }
 
+/* 登录按钮 */
 .btn {
-  width: 100%;
-  margin-top: 8px;
-  padding: 15px;
-  background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
-  border: none;
-  border-radius: 14px;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: transform .15s, box-shadow .15s;
-  box-shadow: 0 6px 24px rgba(0,122,255,0.42);
+  width:100%; margin-top:8px;
+  padding:15px;
+  background: var(--apple-blue);
+  border:none; border-radius:980px;
+  color:#fff; font-size:15px; font-weight:600; font-family:inherit;
+  cursor:pointer; position:relative; overflow:hidden;
+  box-shadow: 0 4px 18px rgba(0,113,227,0.38);
+  transition: transform .15s, box-shadow .15s, background .15s;
 }
 .btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.16) 0%, transparent 55%);
-  opacity: 0;
-  transition: opacity .2s;
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(135deg,rgba(255,255,255,0.18) 0%,transparent 55%);
+  opacity:0; transition:opacity .2s;
 }
-.btn:hover  { transform:translateY(-2px); box-shadow:0 10px 32px rgba(0,122,255,0.52); }
-.btn:hover::after { opacity: 1; }
-.btn:active { transform:translateY(0);   box-shadow:0 4px 16px rgba(0,122,255,0.38); }
+.btn:hover  { background:#0077ed; transform:translateY(-2px); box-shadow:0 8px 28px rgba(0,113,227,0.42); }
+.btn:hover::after { opacity:1; }
+.btn:active { transform:translateY(0); box-shadow:0 3px 12px rgba(0,113,227,0.3); }
 </style>
 </head>
 <body>
-<div class="blob b1"></div>
-<div class="blob b2"></div>
-<div class="blob b3"></div>
-
 <div class="card">
   <div class="island">
-    <div class="dot"></div>
+    <div class="island-dot"></div>
     <span class="island-label">JSP 聊天室</span>
   </div>
 
