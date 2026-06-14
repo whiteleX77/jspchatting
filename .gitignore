@@ -1,0 +1,16 @@
+# IDE
+.idea/
+*.iml
+.DS_Store
+.mymetadata
+.classpath
+.project
+
+# Compiled classes
+WebRoot/WEB-INF/classes/
+classes/
+
+# Build artifacts
+*.war
+*.jar
+!WebRoot/WEB-INF/lib/*.jar
